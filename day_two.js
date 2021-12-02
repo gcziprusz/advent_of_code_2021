@@ -1,4 +1,4 @@
-// https://adventofcode.com/2021/day/2
+// QUESTION https://adventofcode.com/2021/day/2
 let coords = new Array(
   ["forward", 6],
   ["forward", 8],
