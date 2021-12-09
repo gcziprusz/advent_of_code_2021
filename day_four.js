@@ -756,3 +756,59 @@ outermost: for (let draw of draws) {
     }
   }
 }
+
+
+/*
+
+PART 2
+
+*/
+let ROWS = boards[0][0].length;
+let COLS = boards[0].length;
+let winningBoards = new Set([...boards.keys()]);
+
+let boardSum = (board) => {
+  let s = 0;
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      if (board[row][col] > 0) s += board[row][col];
+    }
+  }
+  return s;
+};
+
+function isWinnigRow(board, r) {
+  for (let e of board[r]) {
+    if (e > 0) return false;
+  }
+  return true;
+}
+
+function isWinnigCol(board, c) {
+  for (let r = 0; r < ROWS; r++) {
+    if (board[r][c] > 0) return false;
+  }
+  return true;
+}
+
+outermost: for (let draw of draws) {
+  for (let board = 0; board < boards.length; board++) {
+    for (let row = 0; row < ROWS; row++) {
+      for (let col = 0; col < COLS; col++) {
+        if (draw === boards[board][row][col]) {
+          boards[board][row][col] = -boards[board][row][col];
+          if (
+            isWinnigRow(boards[board], row) ||
+            isWinnigCol(boards[board], col)
+          ) {
+            winningBoards.delete(board);
+            if (winningBoards.size === 0) {
+              console.log("res", boardSum(boards[board]) * draw);
+              break outermost;
+            }
+          }
+        }
+      }
+    }
+  }
+}
