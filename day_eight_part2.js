@@ -1,5 +1,5 @@
 // https://adventofcode.com/2021/day/8
-
+// https://www.reddit.com/r/adventofcode/comments/rv2ea3/2021_day_8_my_solution_a_little_late/
 let inputExample = [
   "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe",
   "edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc",
@@ -215,14 +215,146 @@ let input = [
   "eg dgaebc dfcgab cdgfe edfcb adcgf cedagf geaf bacdefg gde | dfcbe eagf agdecf ge",
 ];
 
-let res = 0;
+let res = new Map();
+let map = new Map();
 for (let line of input) {
   let [, readings] = line.split("|").map((l) => l.trim());
   for (let digit of readings.split(" ")) {
-    if ([2, 4, 3, 7].includes(digit.length)) {
-      res++;
+    if ([2].includes(digit.length)) {
+      map.set(1, digit);
+    }
+    if ([4].includes(digit.length)) {
+      map.set(4, digit);
+    }
+    if ([3].includes(digit.length)) {
+      map.set(7, digit);
+    }
+    if ([7].includes(digit.length)) {
+      map.set(8, digit);
+    }
+  }
+  for (let digit of readings.split(" ")) {
+    if (5 === digit.length) {
+      if (digit.includes(map.get(1))) {
+        map.set(3, digit);
+      }
     }
   }
 }
 
 console.log("res", res, res === 26);
+
+function contains(s, s1) {
+  let [ss, ss1] = [[...s].sort(), [...s1].sort()];
+  return ss.join("").includes(ss1.join(""));
+}
+
+console.log("contains", contains("fegbdc", "bc") === true);
+console.log("contains", contains("fegbdc", "ss") === true);
+console.log("contains", contains("fegbdc", "fegbdc") === true);
+console.log("contains", contains("fegbdc", "cbdgef") === true);
+
+// 0:      1:      2:      3:      4:
+// aaaa    ....    aaaa    aaaa    ....
+// b    c  .    c  .    c  .    c  b    c
+// b    c  .    c  .    c  .    c  b    c
+// ....    ....    dddd    dddd    dddd
+// e    f  .    f  e    .  .    f  .    f
+// e    f  .    f  e    .  .    f  .    f
+// gggg    ....    gggg    gggg    ....
+
+//  5:      6:      7:      8:      9:
+// aaaa    aaaa    aaaa    aaaa    aaaa
+// b    .  b    .  .    c  b    c  b    c
+// b    .  b    .  .    c  b    c  b    c
+// dddd    dddd    ....    dddd    dddd
+// .    f  e    f  .    f  e    f  .    f
+// .    f  e    f  .    f  e    f  .    f
+// gggg    gggg    ....    gggg    gggg
+
+// 1   2     ok    e b     => c f
+// 7   3     ok    e b d   => a c f
+// 4   4     ok    e b c g => b c d f
+// 8   7     ok    e b d g    a c d f
+
+// 2   5                   => a c d e g      X
+// 3   5                   => a c d f g      X
+// 5   5                   => a b d f g      X
+
+// 0   6                   => a b c e f g    X
+// 6   6                   => a b d e f g    X
+// 9   6                   => a b c d f g    X
+
+// len 5 and contains a one = 3
+// len 6 and contains a four = 9
+// len 6 and contains a seven but not 3 = 0
+// len 6 and not ^ = 6
+
+// len 5 and 6 contains it = 5 else its a 2
+
+//   0
+// 1   2
+//   3
+// 4   6
+//   7
+// #0
+// 012*4*67
+// #1
+// **2***6*
+// #2
+// 0*234**7
+// #3
+// 0*23**67
+// #4
+// *123**6*
+// #5
+// 01*3**67
+// #6
+// 01*34*67
+// #7
+// 0*2***6*
+// #8
+// 01234567
+// #9
+// 0123**67
+
+// "be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe",
+// num len
+// 1   2     ok    e b     => c f
+// 7   3     ok    e b d   => a c f
+// 4   4     ok    e b c g => b c d f
+// 8   7     ok    e b d g    a c d f
+
+// 2   5                   => a c d e g
+// 3   5                   => a c d f g
+// 5   5                   => a b d f g
+
+// 0   6                   => a b c e f g
+// 6   6                   => a b d e f g
+// 9   6                   => a b c d f g
+
+/*
+dddd
+e    a
+e    a
+ ffff
+g    b
+g    b
+ cccc
+ 
+So, the unique signal patterns would correspond to the following digits:
+acedgfb: 8
+cdfbe: 5
+gcdfa: 2
+fbcad: 3
+dab: 7
+cefabd: 9
+cdfgeb: 6
+eafb: 4
+cagedb: 0
+ab: 1
+Then, the four digits of the output value can be decoded:
+cdfeb: 5
+fcadb: 3
+cdfeb: 5
+cdbaf: 3*/
