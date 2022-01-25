@@ -7,3 +7,5 @@ npx ts-node {day}.ts
 
 node {day}.js
 
+go run {file}.go
+
